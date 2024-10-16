@@ -21,11 +21,12 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
+from __future__ import annotations
 
 
 def utf8(s):
     if isinstance(s, str):
-        s = s.encode('utf-8')
+        s = s.encode("utf-8")
 
     return bytes(s)
 

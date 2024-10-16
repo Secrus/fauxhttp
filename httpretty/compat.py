@@ -1,5 +1,4 @@
 # #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # <HTTPretty - HTTP client mock for Python>
 # Copyright (C) <2011-2021> Gabriel Falcão <gabriel@nacaolivre.org>
@@ -24,17 +23,17 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
+from __future__ import annotations
 
-import io
-import types
-from urllib.parse import urlsplit
-from urllib.parse import urlunsplit
+from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qs
 from urllib.parse import quote
 from urllib.parse import quote_plus
 from urllib.parse import unquote
 from urllib.parse import urlencode
-from http.server import BaseHTTPRequestHandler
+from urllib.parse import urlsplit
+from urllib.parse import urlunsplit
+
 
 unquote_utf8 = unquote
 
@@ -43,18 +42,18 @@ def encode_obj(in_obj):
     return in_obj
 
 
-class BaseClass(object):
+class BaseClass:
     def __repr__(self):
         return self.__str__()
 
 
 __all__ = [
-    'BaseClass',
-    'BaseHTTPRequestHandler',
-    'quote',
-    'quote_plus',
-    'urlencode',
-    'urlunsplit',
-    'urlsplit',
-    'parse_qs',
+    "BaseClass",
+    "BaseHTTPRequestHandler",
+    "quote",
+    "quote_plus",
+    "urlencode",
+    "urlunsplit",
+    "urlsplit",
+    "parse_qs",
 ]

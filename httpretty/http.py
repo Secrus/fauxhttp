@@ -1,5 +1,4 @@
 # #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # <HTTPretty - HTTP client mock for Python>
 # Copyright (C) <2011-2021> Gabriel Falcão <gabriel@nacaolivre.org>
 #
@@ -23,11 +22,12 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-from __future__ import unicode_literals
+from __future__ import annotations
 
 import re
-from .compat import BaseClass
-from .utils import decode_utf8
+
+from httpretty.compat import BaseClass
+from httpretty.utils import decode_utf8
 
 
 STATUSES = {
@@ -109,14 +109,14 @@ STATUSES = {
 
 
 class HttpBaseClass(BaseClass):
-    GET = 'GET'
-    PUT = 'PUT'
-    POST = 'POST'
-    DELETE = 'DELETE'
-    HEAD = 'HEAD'
-    PATCH = 'PATCH'
-    OPTIONS = 'OPTIONS'
-    CONNECT = 'CONNECT'
+    GET = "GET"
+    PUT = "PUT"
+    POST = "POST"
+    DELETE = "DELETE"
+    HEAD = "HEAD"
+    PATCH = "PATCH"
+    OPTIONS = "OPTIONS"
+    CONNECT = "CONNECT"
     METHODS = (GET, PUT, POST, DELETE, HEAD, PATCH, OPTIONS, CONNECT)
 
 
@@ -133,12 +133,12 @@ def parse_requestline(s):
         ...
     ValueError: Not a Request-Line
     """
-    methods = '|'.join(HttpBaseClass.METHODS)
-    m = re.match(r'(' + methods + r')\s+(.*)\s+HTTP/(1.[0|1])', s, re.I)
+    methods = "|".join(HttpBaseClass.METHODS)
+    m = re.match(r"(" + methods + r")\s+(.*)\s+HTTP/(1.[0|1])", s, re.I)
     if m:
         return m.group(1).upper(), m.group(2), m.group(3)
     else:
-        raise ValueError('Not a Request-Line')
+        raise ValueError("Not a Request-Line")
 
 
 def last_requestline(sent_data):

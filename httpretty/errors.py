@@ -1,5 +1,4 @@
 # #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # <HTTPretty - HTTP client mock for Python>
 # Copyright (C) <2011-2021> Gabriel Falcão <gabriel@nacaolivre.org>
@@ -24,25 +23,31 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-from __future__ import unicode_literals
+from __future__ import annotations
+
 import json
+
 
 class HTTPrettyError(Exception):
     pass
 
 
 class UnmockedError(HTTPrettyError):
-    def __init__(self, message='Failed to handle network request', request=None, address=None):
-        hint = 'Tip: You could try setting (allow_net_connect=True) to allow unregistered requests through a real TCP connection in addition to (verbose=True) to debug the issue.'
+    def __init__(
+        self, message="Failed to handle network request", request=None, address=None
+    ):
+        hint = "Tip: You could try setting (allow_net_connect=True) to allow unregistered requests through a real TCP connection in addition to (verbose=True) to debug the issue."
         if request:
             headers = json.dumps(dict(request.headers), indent=2)
-            message = '{message}.\n\nIntercepted unknown {request.method} request {request.url}\n\nWith headers {headers}'.format(**locals())
+            message = "{message}.\n\nIntercepted unknown {request.method} request {request.url}\n\nWith headers {headers}".format(
+                **locals()
+            )
 
         if isinstance(address, (tuple, list)):
             address = ":".join(map(str, address))
 
         if address:
-            hint = 'address: {address} | {hint}'.format(**locals())
+            hint = "address: {address} | {hint}".format(**locals())
 
         self.request = request
-        super(UnmockedError, self).__init__('{message}\n\n{hint}'.format(**locals()))
+        super().__init__("{message}\n\n{hint}".format(**locals()))
