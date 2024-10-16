@@ -1,7 +1,7 @@
 *.pyc
 .coverage
 docs/_build/
-httpretty.egg-info/
+*.egg-info/
 build/
 dist/
 .DS_Store
