@@ -4,30 +4,29 @@
 # Original Issue:
 # https://github.com/gabrielfalcao/HTTPretty/issues/417
 import httpretty
-import requests
 import urllib3
-from sure import expect
-from unittest import skipIf
+import pytest
 try:
     from urllib3.contrib.pyopenssl import extract_from_urllib3
 except Exception:
     extract_from_urllib3 = None
 
 
-@skipIf(extract_from_urllib3 is None,
+@pytest.mark.skipIf(extract_from_urllib3 is None,
         "urllib3.contrib.pyopenssl.extract_from_urllib3 does not exist")
 def test_enable_disable_httpretty_extract():
     "#417 urllib3.contrib.pyopenssl enable -> disable extract"
-    expect(urllib3.util.IS_PYOPENSSL).to.be.false
+    assert urllib3.util.IS_PYOPENSSL is False
     httpretty.enable()
     httpretty.disable()
     extract_from_urllib3()
-    expect(urllib3.util.IS_PYOPENSSL).to.be.false
+    assert urllib3.util.IS_PYOPENSSL is False
+
 
 def test_enable_disable_httpretty():
     "#417 urllib3.contrib.pyopenssl enable -> disable extract"
-    expect(urllib3.util.IS_PYOPENSSL).to.be.false
+    assert urllib3.util.IS_PYOPENSSL is False
     httpretty.enable()
     httpretty.disable()
     extract_from_urllib3()
-    expect(urllib3.util.IS_PYOPENSSL).to.be.false
+    assert urllib3.util.IS_PYOPENSSL is False

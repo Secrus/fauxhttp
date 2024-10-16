@@ -16,12 +16,13 @@ def test_works_with_regex_path():
     httpretty.register_uri(httpretty.GET, patmatchpat, body=mock_body)
 
     response = requests.get("https://example.com/file-one.html")
-    response.status_code.should.equal(200)
-    response.text.should.equal("Mocked https://example.com/file-one.html")
+    assert response.status_code == 200
+    assert response.text == "Mocked https://example.com/file-one.html"
 
     response = requests.get("https://github.com/file-one.json")
-    response.status_code.should.equal(200)
-    response.text.should.equal("Mocked https://github.com/file-one.json")
+    assert response.status_code == 200
+    assert response.text == "Mocked https://example.com/file-one.json"
+
 
 @httpretty.activate(verbose=True, allow_net_connect=False)
 def test_works_with_regex_dotall():
@@ -31,9 +32,9 @@ def test_works_with_regex_dotall():
     httpretty.register_uri(httpretty.GET, patmatchpat, body=mock_body)
 
     response = requests.get("https://example.com/file-two.html")
-    response.status_code.should.equal(200)
-    response.text.should.equal("Mocked https://example.com/file-two.html")
+    assert response.status_code == 200
+    assert response.text == "Mocked https://example.com/file-two.html"
 
     response = requests.get("https://github.com/file-two.json")
-    response.status_code.should.equal(200)
-    response.text.should.equal("Mocked https://github.com/file-two.json")
+    assert response.status_code == 200
+    assert response.text == "Mocked https://example.com/file-two.json"

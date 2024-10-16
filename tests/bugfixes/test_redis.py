@@ -1,13 +1,11 @@
 import os
 import requests
 import httpretty
-
+import pytest
 try:
     from redis import Redis
 except ImportError:
     Redis = None
-
-from unittest import skipUnless
 
 
 def redis_available():
@@ -27,7 +25,7 @@ def redis_available():
         return False
 
 
-@skipUnless(redis_available(), reason='no redis server available for test')
+@pytest.mark.skipIf(not redis_available(), reason='no redis server available for test')
 @httpretty.activate()
 def test_work_in_parallel_to_redis():
     "HTTPretty should passthrough redis connections"
@@ -41,7 +39,7 @@ def test_work_in_parallel_to_redis():
     redis.append('item1', 'value1')
     redis.append('item2', 'value2')
 
-    sorted(redis.keys('*')).should.equal([b'item1', b'item2'])
+    assert sorted(redis.keys('*')) == [b'item1', b'item2']
 
     httpretty.register_uri(
         httpretty.GET,
@@ -49,4 +47,4 @@ def test_work_in_parallel_to_redis():
         body="salvatore")
 
     response = requests.get('http://redis.io')
-    response.text.should.equal('salvatore')
+    assert response.text == 'salvatore'

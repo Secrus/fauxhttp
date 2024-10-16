@@ -1,6 +1,6 @@
 import httpretty
 import httpx
-from sure import expect
+
 
 @httpretty.activate(verbose=True, allow_net_connect=False)
 def test_httpx():
@@ -10,4 +10,4 @@ def test_httpx():
 
     response = httpx.get('https://blog.falcao.it')
 
-    expect(response.text).to.equal("Posts")
+    assert response.text == "Posts"

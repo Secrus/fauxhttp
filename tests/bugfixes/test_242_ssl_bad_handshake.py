@@ -12,14 +12,14 @@ def test_test_ssl_bad_handshake():
     httpretty.register_uri(httpretty.GET, url_http, body='insecure')
     httpretty.register_uri(httpretty.GET, url_https, body='encrypted')
 
-    requests.get(url_http).text.should.equal('insecure')
-    requests.get(url_https).text.should.equal('encrypted')
+    assert requests.get(url_http).text == 'insecure'
+    assert requests.get(url_https).text == 'encrypted'
 
     httpretty.latest_requests().should.have.length_of(2)
     insecure_request, secure_request = httpretty.latest_requests()[:2]
 
-    insecure_request.protocol.should.be.equal('http')
-    secure_request.protocol.should.be.equal('https')
+    assert insecure_request.protocol == 'http'
+    assert secure_request.protocol == 'https'
 
-    insecure_request.url.should.be.equal(url_http)
-    secure_request.url.should.be.equal(url_https)
+    assert insecure_request.url == url_http
+    assert secure_request.url == url_https

@@ -21,12 +21,10 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
+import pytest
 import requests
 import httpretty
 from httpretty.errors import UnmockedError
-
-from unittest import skip
-from sure import expect
 
 
 def http():
@@ -36,6 +34,7 @@ def http():
     sess.mount('https://', adapter)
     return sess
 
+
 @httpretty.activate(allow_net_connect=False)
 def test_https_forwarding():
     "#388 UnmockedError is raised with details about the mismatched request"
@@ -44,13 +43,16 @@ def test_https_forwarding():
     response1 = http().get('http://google.com/')
     response2 = http().get('https://google.com/')
 
-    http().get.when.called_with("https://github.com/gabrielfalcao/HTTPretty").should.have.raised(UnmockedError, 'https://github.com/gabrielfalcao/HTTPretty')
+    with pytest.raises(UnmockedError) as exc_info:
+        http().get("https://github.com/gabrielfalcao/HTTPretty")
 
-    response1.text.should.equal(response2.text)
+    assert exc_info.value == 'https://github.com/gabrielfalcao/HTTPretty'
+
+    assert response1.text == response2.text
     try:
         http().get("https://github.com/gabrielfalcao/HTTPretty")
     except UnmockedError as exc:
-        expect(exc).to.have.property('request')
-        expect(exc.request).to.have.property('host').being.equal('github.com')
-        expect(exc.request).to.have.property('protocol').being.equal('https')
-        expect(exc.request).to.have.property('url').being.equal('https://github.com/gabrielfalcao/HTTPretty')
+        assert hasattr(exc, 'request')
+        assert hasattr(exc.request, 'host') and exc.request.host == 'github.com'
+        assert hasattr(exc.request, 'protocol') and exc.request.protocol == 'https'
+        assert hasattr(exc.request, 'url') and exc.request.url == 'https://github.com/gabrielfalcao/HTTPretty'
