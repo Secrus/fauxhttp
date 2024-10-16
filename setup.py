@@ -29,25 +29,14 @@ import os
 from setuptools import setup, find_packages
 
 
-def read_version():
-    ctx = {}
-    exec(local_file('httpretty', 'version.py'), ctx)
-    return ctx['version']
-
-
 local_file = lambda *f: \
     io.open(
         os.path.join(os.path.dirname(__file__), *f), encoding='utf-8').read()
 
 
-install_requires = []
-tests_requires = ['nose', 'sure', 'coverage', 'mock;python_version<"3.3"',
-                  'rednose']
-
-
 setup(
-    name='httpretty',
-    version=read_version(),
+    name='fauxhttp',
+    version="0.1.0",
     description='HTTP client mock for Python',
     long_description=local_file('README.rst'),
     author='Gabriel Falcao',
@@ -56,26 +45,24 @@ setup(
     zip_safe=False,
     packages=find_packages(exclude=['*tests*']),
     tests_require=local_file('development.txt').splitlines(),
-    install_requires=install_requires,
+    install_requires=[],
     license='MIT',
     test_suite='nose.collector',
     project_urls={
         "Documentation": "https://httpretty.readthedocs.io/en/latest/",
-        "Source Code": "https://github.com/gabrielfalcao/httpretty",
-        "Issue Tracker": "https://github.com/gabrielfalcao/httpretty/issues",
-        "Continuous Integration": "https://github.com/gabrielfalcao/HTTPretty/actions/workflows/pyenv.yml?query=branch%3Amaster+event%3Apush",
-        "Test Coverage": "https://codecov.io/gh/gabrielfalcao/httpretty",
+        "Source Code": "https://github.com/Secrus/fauxhttp",
+        "Issue Tracker": "https://github.com/Secrus/fauxhttp/issues",
     },
-    python_requires='>=3',
+    python_requires='>=3.9',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Testing'
