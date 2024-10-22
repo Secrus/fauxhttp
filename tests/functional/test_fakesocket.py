@@ -28,7 +28,7 @@
 import functools
 import socket
 
-import mock
+from unittest.mock import patch
 
 
 class FakeSocket(socket.socket):
@@ -60,15 +60,15 @@ def recv(flag, size):
 recv = functools.partial(recv, fake_socket_interupter_flag)
 
 
-@mock.patch('httpretty.old_socket', new=FakeSocket)
+@patch('httpretty.old_socket', new=FakeSocket)
 def _test_shorten_response():
     u"HTTPretty shouldn't try to read from server when communication is over"
     import httpretty
 
     fakesocket = httpretty.fakesock.socket(socket.AF_INET,
                                            socket.SOCK_STREAM)
-    with mock.patch.object(fakesocket.truesock, 'recv', recv):
+    with patch.object(fakesocket.truesock, 'recv', recv):
         fakesocket.connect(('localhost', 80))
         fakesocket._true_sendall('WHATEVER')
-        expect(fakesocket.fd.read()).to.equal(
+        assert fakesocket.fd.read() == (
             'a' * (httpretty.socket_buffer_size - 1))

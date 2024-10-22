@@ -44,15 +44,15 @@ def test_http_passthrough():
     httpretty.register_uri(httpretty.GET, url, body="mocked")
 
     response2 = http().get('http://google.com/')
-    expect(response2.content).to.equal(b'Not Google')
+    assert response2.content == b'Not Google'
 
     response3 = http().get(url)
-    response3.content.should.equal(b"mocked")
+    assert response3.content== b"mocked"
 
     httpretty.disable()
 
     response4 = http().get(url)
-    (response4.content).should.equal(response1.content)
+    assert response4.content == response1.content
 
 
 def test_https_passthrough():
@@ -65,12 +65,12 @@ def test_https_passthrough():
     httpretty.register_uri(httpretty.GET, url, body="mocked")
 
     response2 = http().get('https://google.com/')
-    expect(response2.content).to.equal(b'Not Google')
+    assert response2.content == b'Not Google'
 
     response3 = http().get(url)
-    (response3.text).should.equal('mocked')
+    assert response3.text == 'mocked'
 
     httpretty.disable()
 
     response4 = http().get(url)
-    (response4.content).should.equal(response1.content)
+    assert response4.content == response1.content

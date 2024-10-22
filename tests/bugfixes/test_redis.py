@@ -25,7 +25,7 @@ def redis_available():
         return False
 
 
-@pytest.mark.skipIf(not redis_available(), reason='no redis server available for test')
+@pytest.mark.skipif(not redis_available(), reason='no redis server available for test')
 @httpretty.activate()
 def test_work_in_parallel_to_redis():
     "HTTPretty should passthrough redis connections"

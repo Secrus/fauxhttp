@@ -34,7 +34,7 @@ from httpretty import core
 from httpretty.core import URIInfo, BaseClass, Entry, FakeSockFile, HTTPrettyRequest
 from httpretty.http import STATUSES
 
-from tests.compat import MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 
 TEST_HEADER = """

@@ -15,7 +15,7 @@ def test_test_ssl_bad_handshake():
     assert requests.get(url_http).text == 'insecure'
     assert requests.get(url_https).text == 'encrypted'
 
-    httpretty.latest_requests().should.have.length_of(2)
+    assert len(httpretty.latest_requests()) == 2
     insecure_request, secure_request = httpretty.latest_requests()[:2]
 
     assert insecure_request.protocol == 'http'

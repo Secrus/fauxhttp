@@ -37,7 +37,7 @@ class DecoratedNonUnitTest(object):
         got1 = fd.read()
         fd.close()
 
-        expect(got1).to.equal(b'glub glub')
+        assert got1 == b'glub glub'
 
 
 class NonUnitTestTest(TestCase):
@@ -61,7 +61,7 @@ class ClassDecorator(TestCase):
         got1 = fd.read()
         fd.close()
 
-        expect(got1).to.equal(b'glub glub')
+        assert got1 == b'glub glub'
 
     def test_decorated2(self):
         HTTPretty.register_uri(
@@ -72,7 +72,7 @@ class ClassDecorator(TestCase):
         got1 = fd.read()
         fd.close()
 
-        expect(got1).to.equal(b'buble buble')
+        assert got1 == b'buble buble'
 
 
 @httprettified
@@ -92,13 +92,13 @@ class ClassDecoratorWithSetUp(TestCase):
         got1 = fd.read()
         fd.close()
 
-        expect(got1).to.equal(b'glub glub')
+        assert got1 == b'glub glub'
 
         fd = urllib2.urlopen('http://localhost/')
         got2 = fd.read()
         fd.close()
 
-        expect(got2).to.equal(b'buble buble')
+        assert got2 == b'buble buble'
 
     def test_decorated2(self):
 
@@ -106,10 +106,10 @@ class ClassDecoratorWithSetUp(TestCase):
         got1 = fd.read()
         fd.close()
 
-        expect(got1).to.equal(b'glub glub')
+        assert got1 == b'glub glub'
 
         fd = urllib2.urlopen('http://localhost/')
         got2 = fd.read()
         fd.close()
 
-        expect(got2).to.equal(b'buble buble')
+        assert got2 == b'buble buble'
