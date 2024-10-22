@@ -191,12 +191,12 @@ try:
 except ImportError:
     requests_urllib3_connection = None
     old_requests_ssl_wrap_socket = None
-
-try:
-    import eventlet
-    import eventlet.green
-except ImportError:
-    eventlet = None
+#
+# try:
+#     import eventlet
+#     import eventlet.green
+# except ImportError:
+#     eventlet = None
 
 DEFAULT_HTTP_PORTS = frozenset([80])
 POTENTIAL_HTTP_PORTS = set(DEFAULT_HTTP_PORTS)
@@ -1858,11 +1858,11 @@ def apply_patch_socket():
         requests_urllib3_connection.ssl_wrap_socket = urllib3_wrap
         requests_urllib3_connection.__dict__["ssl_wrap_socket"] = urllib3_wrap
 
-    if eventlet:
-        eventlet.green.ssl.GreenSSLContext = old_sslcontext_class
-        eventlet.green.ssl.__dict__["GreenSSLContext"] = old_sslcontext_class
-        eventlet.green.ssl.SSLContext = old_sslcontext_class
-        eventlet.green.ssl.__dict__["SSLContext"] = old_sslcontext_class
+    # if eventlet:
+    #     eventlet.green.ssl.GreenSSLContext = old_sslcontext_class
+    #     eventlet.green.ssl.__dict__["GreenSSLContext"] = old_sslcontext_class
+    #     eventlet.green.ssl.SSLContext = old_sslcontext_class
+    #     eventlet.green.ssl.__dict__["SSLContext"] = old_sslcontext_class
 
     if socks:
         socks.socksocket = fakesock.socket
