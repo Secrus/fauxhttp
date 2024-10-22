@@ -3,8 +3,6 @@
 # import boto3
 # from botocore.exceptions import ClientError
 #
-# from sure import expect
-#
 #
 # @httpretty.activate(allow_net_connect=False, verbose=True)
 # def test_boto3():

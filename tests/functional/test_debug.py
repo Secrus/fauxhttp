@@ -23,7 +23,6 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 import socket
 from unittest import skip
-from sure import scenario, expect
 from httpretty import httprettified
 
 

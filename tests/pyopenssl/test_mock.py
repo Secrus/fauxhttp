@@ -29,8 +29,6 @@ from __future__ import unicode_literals
 import requests
 
 from httpretty import HTTPretty, httprettified
-from sure import expect
-
 
 @httprettified
 def test_httpretty_overrides_when_pyopenssl_installed():
@@ -40,6 +38,6 @@ def test_httpretty_overrides_when_pyopenssl_installed():
                            body="Find the best daily deals")
 
     response = requests.get('https://yipit.com')
-    expect(response.text).to.equal('Find the best daily deals')
-    expect(HTTPretty.last_request.method).to.equal('GET')
-    expect(HTTPretty.last_request.path).to.equal('/')
+    assert response.text == 'Find the best daily deals'
+    assert HTTPretty.last_request.method == 'GET'
+    assert HTTPretty.last_request.path == '/'

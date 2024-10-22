@@ -3,13 +3,11 @@ import json
 import errno
 
 from freezegun import freeze_time
-from sure import expect
 
 from httpretty.core import HTTPrettyRequest, FakeSSLSocket, fakesock, httpretty
 from httpretty.core import URIMatcher, URIInfo
 
-from tests.compat import Mock, patch, call
-
+from unittest.mock import Mock, call, patch
 
 class SocketErrorStub(Exception):
     def __init__(self, errno):
@@ -17,8 +15,7 @@ class SocketErrorStub(Exception):
 
 
 def test_request_stubs_internals():
-    ("HTTPrettyRequest is a BaseHTTPRequestHandler that replaces "
-     "real socket file descriptors with in-memory ones")
+    """HTTPrettyRequest is a BaseHTTPRequestHandler that replaces real socket file descriptors with in-memory ones"""
 
     # Given a valid HTTP request header string
     headers = "\r\n".join([
@@ -34,28 +31,22 @@ def test_request_stubs_internals():
     request = HTTPrettyRequest(headers, body='')
 
     # Then it should have parsed the headers
-    dict(request.headers).should.equal({
+    assert dict(request.headers) == {
         'accept-encoding': 'identity',
         'connection': 'close',
         'content-type': 'application/json',
         'host': 'github.com',
         'user-agent': 'Python-urllib/2.7'
-    })
+    }
 
-    # And the `rfile` should be a io.BytesIO
-    type_as_str = io.BytesIO.__module__ + '.' + io.BytesIO.__name__
-
-    request.should.have.property('rfile').being.a(type_as_str)
-
-    # And the `wfile` should be a io.BytesIO
-    request.should.have.property('wfile').being.a(type_as_str)
-
-    # And the `method` should be available
-    request.should.have.property('method').being.equal('POST')
-
+    assert request.rfile
+    assert type(request.rfile) is io.BytesIO
+    assert request.wfile
+    assert type(request.wfile) is io.BytesIO
+    assert request.method == 'POST'
 
 def test_request_parse_querystring():
-    ("HTTPrettyRequest#parse_querystring should parse unicode data")
+    """HTTPrettyRequest#parse_querystring should parse unicode data"""
 
     # Given a request string containing a unicode encoded querystring
 
@@ -68,12 +59,12 @@ def test_request_parse_querystring():
     request = HTTPrettyRequest(headers, body='')
 
     # Then it should have a parsed querystring
-    request.querystring.should.equal({'name': ['Gabriel Falcão']})
+    assert request.querystring == {'name': ["Gabriel Falcão"]}
 
 
 def test_request_parse_body_when_it_is_application_json():
-    ("HTTPrettyRequest#parse_request_body recognizes the "
-     "content-type `application/json` and parses it")
+    """HTTPrettyRequest#parse_request_body recognizes the
+     content-type `application/json` and parses it"""
 
     # Given a request string containing a unicode encoded querystring
     headers = "\r\n".join([
@@ -87,12 +78,12 @@ def test_request_parse_body_when_it_is_application_json():
     request = HTTPrettyRequest(headers, body)
 
     # Then it should have a parsed body
-    request.parsed_body.should.equal({'name': 'Gabriel Falcão'})
+    assert request.parsed_body == {'name': 'Gabriel Falcão'}
 
 
 def test_request_parse_body_when_it_is_text_json():
-    ("HTTPrettyRequest#parse_request_body recognizes the "
-     "content-type `text/json` and parses it")
+    """HTTPrettyRequest#parse_request_body recognizes the
+     content-type `text/json` and parses it"""
 
     # Given a request string containing a unicode encoded querystring
     headers = "\r\n".join([
@@ -106,7 +97,7 @@ def test_request_parse_body_when_it_is_text_json():
     request = HTTPrettyRequest(headers, body)
 
     # Then it should have a parsed body
-    request.parsed_body.should.equal({'name': 'Gabriel Falcão'})
+    assert request.parsed_body == {'name': 'Gabriel Falcão'}
 
 
 def test_request_parse_body_when_it_is_urlencoded():
@@ -125,17 +116,17 @@ def test_request_parse_body_when_it_is_urlencoded():
     request = HTTPrettyRequest(headers, body)
 
     # Then it should have a parsed body
-    request.parsed_body.should.equal({
+    assert request.parsed_body == {
         'name': ['Gabriel Falcão'],
         'age': ["25"],
         'projects': ["httpretty", "sure", "lettuce"]
-    })
+    }
 
 
 def test_request_parse_body_when_unrecognized():
-    ("HTTPrettyRequest#parse_request_body returns the value as "
-     "is if the Content-Type is not recognized")
-
+    """HTTPrettyRequest#parse_request_body returns the value as
+     is if the Content-Type is not recognized"
+    """
     # Given a request string containing a unicode encoded querystring
     headers = "\r\n".join([
         'POST /create HTTP/1.1',
@@ -148,12 +139,12 @@ def test_request_parse_body_when_unrecognized():
     request = HTTPrettyRequest(headers, body)
 
     # Then it should have a parsed body
-    request.parsed_body.should.equal("foobar:\nlalala")
+    assert request.parsed_body == "foobar:\nlalala"
 
 
 def test_request_string_representation():
-    ("HTTPrettyRequest should have a forward_and_trace-friendly "
-     "string representation")
+    """HTTPrettyRequest should have a forward_and_trace-friendly
+     string representation"""
 
     # Given a request string containing a unicode encoded querystring
     headers = "\r\n".join([
@@ -168,7 +159,7 @@ def test_request_string_representation():
     request = HTTPrettyRequest(headers, body, sock=Mock(is_https=True))
 
     # Then its string representation should show the headers and the body
-    str(request).should.equal('<HTTPrettyRequest("POST", "https://blog.falcao.it/create", headers={\'Content-Type\': \'JPEG-baby\', \'Host\': \'blog.falcao.it\'}, body=14)>')
+    assert str(request)== '<HTTPrettyRequest("POST", "https://blog.falcao.it/create", headers={\'Content-Type\': \'JPEG-baby\', \'Host\': \'blog.falcao.it\'}, body=14)>'
 
 
 def test_fake_ssl_socket_proxies_its_ow_socket():
@@ -201,7 +192,7 @@ def test_fakesock_socket_getpeercert():
     certificate = socket.getpeercert()
 
     # Then it should return a hardcoded value
-    certificate.should.equal({
+    assert certificate == {
         u'notAfter': 'Sep 29 04:20:00 GMT',
         u'subject': (
             ((u'organizationName', u'*.somewhere.com'),),
@@ -212,7 +203,7 @@ def test_fakesock_socket_getpeercert():
             (u'DNS', u'somewhere.com'),
             (u'DNS', u'*')
         )
-    })
+    }
 
 
 def test_fakesock_socket_ssl():
@@ -227,7 +218,7 @@ def test_fakesock_socket_ssl():
     result = socket.ssl(sentinel)
 
     # Then it should have returned its first argument
-    result.should.equal(sentinel)
+    assert result == sentinel
 
 
 @patch('httpretty.core.old_socket')
@@ -261,7 +252,7 @@ def test_fakesock_socket_close(old_socket):
 
     # Then its real socket should have been closed
     old_socket.return_value.close.assert_called_once_with()
-    socket.__truesock_is_connected__.should.be.false
+    assert socket.__truesock_is_connected__ is False
 
 
 @patch('httpretty.core.old_socket')
@@ -277,11 +268,11 @@ def test_fakesock_socket_makefile(old_socket):
     fd = socket.makefile(mode='rw', bufsize=512)
 
     # Then it should have returned the socket's own filedescriptor
-    expect(fd).to.equal(socket.fd)
+    assert fd == socket.fd
     # And the mode should have been set in the socket instance
-    socket._mode.should.equal('rw')
+    assert socket._mode == 'rw'
     # And the bufsize should have been set in the socket instance
-    socket._bufsize.should.equal(512)
+    assert socket._bufsize == 512
 
     # And the entry should have been filled with that filedescriptor
     socket._entry.fill_filekind.assert_called_once_with(fd)
@@ -310,13 +301,13 @@ def test_fakesock_socket_real_sendall(old_socket):
     # real_socket.setblocking.called.should.be.false
 
     # And recv was never called
-    real_socket.recv.called.should.be.false
+    assert real_socket.recv.called is False
 
     # And the buffer is empty
-    socket.fd.read().should.equal(b'')
+    assert socket.fd.read() == b''
 
     # And connect was never called
-    real_socket.connect.called.should.be.false
+    assert real_socket.connect.called is False
 
 
 @patch('httpretty.core.old_socket')
@@ -348,10 +339,10 @@ def test_fakesock_socket_real_sendall_when_http(old_socket):
     ])
 
     # And the buffer should contain the data from the server
-    socket.fd.read().should.equal(b"response from server")
+    assert socket.fd.read() == b"response from server"
 
     # And connect was called
-    real_socket.connect.called.should.be.true
+    assert real_socket.connect.called is True
 
 
 @patch('httpretty.core.old_socket')
@@ -384,10 +375,10 @@ def test_fakesock_socket_real_sendall_continue_eagain_when_http(socket, old_sock
     ])
 
     # And the buffer should contain the data from the server
-    socket.fd.read().should.equal(b"after error")
+    assert socket.fd.read() == b"after error"
 
     # And connect was called
-    real_socket.connect.called.should.be.true
+    assert real_socket.connect.called is True
 
 
 @patch('httpretty.core.old_socket')
@@ -418,10 +409,10 @@ def test_fakesock_socket_real_sendall_socket_error_when_http(socket, old_socket)
     real_socket.recv.assert_called_once_with(socket._bufsize)
 
     # And the buffer should contain the data from the server
-    socket.fd.read().should.equal(b"")
+    assert socket.fd.read() == b""
 
     # And connect was called
-    real_socket.connect.called.should.be.true
+    assert real_socket.connect.called is True
 
 
 @patch('httpretty.core.old_socket')
@@ -458,7 +449,7 @@ def test_fakesock_socket_real_sendall_when_sending_data(POTENTIAL_HTTP_PORTS, ol
     ])
 
     # And the buffer should contain the data from the server
-    socket.fd.read().should.equal(b"response from foobar :)")
+    assert socket.fd.read() == b"response from foobar :)"
 
 
 @patch('httpretty.core.old_socket')
@@ -535,7 +526,7 @@ def test_fakesock_socket_sendall_with_body_data_no_entry(old_socket):
     result = socket.sendall(b"BLABLABLABLA")
 
     # Then the result should be the return value from real_sendall
-    result.should.equal('cool')
+    assert result == 'cool'
 
 
 @patch('httpretty.core.old_socket')
@@ -560,7 +551,7 @@ def test_fakesock_socket_sendall_with_body_data_with_entry(POTENTIAL_HTTP_PORTS,
     socket.sendall(b"BLABLABLABLA")
 
     # Then it should have called real_sendall
-    data_sent.should.equal([b'BLABLABLABLA'])
+    assert data_sent == [b'BLABLABLABLA']
 
 
 @patch('httpretty.core.httpretty.match_uriinfo')
@@ -600,7 +591,7 @@ def test_fakesock_socket_sendall_with_body_data_with_chunked_entry(POTENTIAL_HTT
     socket.sendall(b"BLABLABLABLA")
 
     # Then the entry should have that body
-    httpretty.last_request.body.should.equal(b'BLABLABLABLA')
+    assert httpretty.last_request.body == b'BLABLABLABLA'
 
 
 def test_fakesock_socket_sendall_with_path_starting_with_two_slashes():

@@ -24,8 +24,6 @@
 import requests
 import httpretty
 
-from sure import expect
-
 
 def http():
     sess = requests.Session()

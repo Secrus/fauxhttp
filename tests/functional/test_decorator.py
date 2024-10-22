@@ -1,6 +1,5 @@
 # coding: utf-8
 from unittest import TestCase
-from sure import expect
 from httpretty import httprettified, HTTPretty
 
 try:

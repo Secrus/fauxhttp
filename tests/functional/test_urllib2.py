@@ -35,7 +35,6 @@ except ImportError:
     urlopen = urllib2.urlopen
 
 from freezegun import freeze_time
-from sure import within, miliseconds
 from httpretty import HTTPretty, httprettified
 from httpretty.core import decode_utf8
 

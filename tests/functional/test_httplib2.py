@@ -29,7 +29,6 @@ from __future__ import unicode_literals
 import re
 import httplib2
 from freezegun import freeze_time
-from sure import expect, within, miliseconds
 from httpretty import HTTPretty, httprettified
 from httpretty.core import decode_utf8
 

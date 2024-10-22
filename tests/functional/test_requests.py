@@ -31,7 +31,6 @@ import httpretty
 
 from freezegun import freeze_time
 from contextlib import contextmanager
-from sure import within, miliseconds, expect
 from tornado import version as tornado_version
 from httpretty import HTTPretty, httprettified
 from httpretty.core import decode_utf8

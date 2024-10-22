@@ -63,7 +63,6 @@ recv = functools.partial(recv, fake_socket_interupter_flag)
 @mock.patch('httpretty.old_socket', new=FakeSocket)
 def _test_shorten_response():
     u"HTTPretty shouldn't try to read from server when communication is over"
-    from sure import expect
     import httpretty
 
     fakesocket = httpretty.fakesock.socket(socket.AF_INET,

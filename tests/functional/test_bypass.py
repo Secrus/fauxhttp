@@ -34,7 +34,6 @@ except ImportError:
 
 from .testserver import TornadoServer, TCPServer, TCPClient
 from .base import get_free_tcp_port
-from sure import expect, that_with_context
 
 import functools
 
