@@ -512,7 +512,7 @@ def test_fakesock_socket_sendall_with_body_data_no_entry(old_socket):
 
     class MySocket(fakesock.socket):
         def real_sendall(self, data):
-            data.should.equal(b'BLABLABLABLA')
+            assert data == b'BLABLABLABLA'
             return 'cool'
 
     # Given an instance of that socket

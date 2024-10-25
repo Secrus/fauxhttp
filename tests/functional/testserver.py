@@ -106,7 +106,7 @@ def subprocess_server_tcp(port):
     HTTPretty.disable()
     import socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind(('localhost', port))
+    s.bind(('127.0.0.1', port))
     s.listen(True)
     conn, addr = s.accept()
 

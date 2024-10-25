@@ -58,7 +58,7 @@ def http_server():
         allow_net_connect = True
     httpretty.disable()
     http_port = get_free_tcp_port()
-    context = Context(TornadoServer(http_port), http_port)
+    context = HTTPServerContext(TornadoServer(http_port), http_port)
     context.server.start()
     ready = False
     timeout = 2
@@ -67,7 +67,7 @@ def http_server():
         httpretty.disable()
         time.sleep(.1)
         try:
-            requests.get('http://localhost:{}/'.format(context.http_port))
+            requests.get('http://localhost:{}/'.format(context.port))
             ready = True
         except Exception:
             if time.time() - started_at >= timeout:
@@ -105,19 +105,19 @@ def test_httpretty_bypasses_when_disabled(http_server):
     "httpretty should bypass all requests by disabling it"
 
     httpretty.register_uri(
-        httpretty.GET, "http://localhost:{}/go-for-bubbles/".format(http_server.http_port),
+        httpretty.GET, "http://localhost:{}/go-for-bubbles/".format(http_server.port),
         body="glub glub")
 
     httpretty.disable()
 
-    fd = urllib2.urlopen('http://localhost:{}/go-for-bubbles/'.format(http_server.http_port))
+    fd = urllib2.urlopen('http://localhost:{}/go-for-bubbles/'.format(http_server.port))
     got1 = fd.read()
     fd.close()
 
     assert got1 == (
         b'. o O 0 O o . o O 0 O o . o O 0 O o . o O 0 O o . o O 0 O o .')
 
-    fd = urllib2.urlopen('http://localhost:{}/come-again/'.format(http_server.http_port))
+    fd = urllib2.urlopen('http://localhost:{}/come-again/'.format(http_server.port))
     got2 = fd.read()
     fd.close()
 
@@ -125,12 +125,12 @@ def test_httpretty_bypasses_when_disabled(http_server):
 
     httpretty.enable()
 
-    fd = urllib2.urlopen('http://localhost:{}/go-for-bubbles/'.format(http_server.http_port))
+    fd = urllib2.urlopen('http://localhost:{}/go-for-bubbles/'.format(http_server.port))
     got3 = fd.read()
     fd.close()
 
     assert got3 == (b'glub glub')
-    core.POTENTIAL_HTTP_PORTS.remove(http_server.http_port)
+    core.POTENTIAL_HTTP_PORTS.remove(http_server.port)
 
 
 @httpretty.activate(verbose=True)
@@ -138,21 +138,21 @@ def test_httpretty_bypasses_a_unregistered_request(http_server):
     "httpretty should bypass a unregistered request by disabling it"
 
     httpretty.register_uri(
-        httpretty.GET, "http://localhost:{}/go-for-bubbles/".format(http_server.http_port),
+        httpretty.GET, "http://localhost:{}/go-for-bubbles/".format(http_server.port),
         body="glub glub")
 
-    fd = urllib2.urlopen('http://localhost:{}/go-for-bubbles/'.format(http_server.http_port))
+    fd = urllib2.urlopen('http://localhost:{}/go-for-bubbles/'.format(http_server.port))
     got1 = fd.read()
     fd.close()
 
     assert got1 == b'glub glub'
 
-    fd = urllib2.urlopen('http://localhost:{}/come-again/'.format(http_server.http_port))
+    fd = urllib2.urlopen('http://localhost:{}/come-again/'.format(http_server.port))
     got2 = fd.read()
     fd.close()
 
     assert got2 == b'<- HELLO WORLD ->'
-    core.POTENTIAL_HTTP_PORTS.remove(http_server.http_port)
+    core.POTENTIAL_HTTP_PORTS.remove(http_server.port)
 
 
 @httpretty.activate(verbose=True)
@@ -184,7 +184,7 @@ def test_disallow_net_connect_1(http_server):
     def foo():
         fd = None
         try:
-            fd = urllib2.urlopen('http://localhost:{}/go-for-bubbles/'.format(http_server.http_port))
+            fd = urllib2.urlopen('http://localhost:{}/go-for-bubbles/'.format(http_server.port))
         finally:
             if fd:
                 fd.close()

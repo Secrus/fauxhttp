@@ -53,7 +53,7 @@ def test_httpretty_should_mock_a_simple_get_with_urllib2_read():
 
 @httprettified
 #@within(two=miliseconds)
-def test_httpretty_provides_easy_access_to_querystrings(now):
+def test_httpretty_provides_easy_access_to_querystrings():
     "HTTPretty should provide an easy access to the querystring"
 
     HTTPretty.register_uri(HTTPretty.GET, "http://yipit.com/",
@@ -174,7 +174,7 @@ def test_httpretty_should_allow_adding_and_overwritting_by_kwargs_u2():
 
 @httprettified
 #@within(two=miliseconds)
-def test_httpretty_should_support_a_list_of_successive_responses_urllib2(now):
+def test_httpretty_should_support_a_list_of_successive_responses_urllib2():
     ("HTTPretty should support adding a list of successive "
      "responses with urllib2")
 
@@ -207,7 +207,7 @@ def test_httpretty_should_support_a_list_of_successive_responses_urllib2(now):
 
 @httprettified
 #@within(two=miliseconds)
-def test_can_inspect_last_request(now):
+def test_can_inspect_last_request():
     "HTTPretty.last_request is a mimetools.Message request from last match"
 
     HTTPretty.register_uri(HTTPretty.POST, "http://api.github.com/",
@@ -232,7 +232,7 @@ def test_can_inspect_last_request(now):
 
 @httprettified
 #@within(two=miliseconds)
-def test_can_inspect_last_request_with_ssl(now):
+def test_can_inspect_last_request_with_ssl():
     "HTTPretty.last_request is recorded even when mocking 'https' (SSL)"
 
     HTTPretty.register_uri(HTTPretty.POST, "https://secure.github.com/",
@@ -274,7 +274,7 @@ def test_httpretty_ignores_querystrings_from_registered_uri():
 
 @httprettified
 #@within(two=miliseconds)
-def test_callback_response(now):
+def test_callback_response():
     ("HTTPretty should call a callback function to be set as the body with"
      " urllib2")
 

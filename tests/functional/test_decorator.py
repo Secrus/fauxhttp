@@ -1,11 +1,7 @@
-# coding: utf-8
 from unittest import TestCase
 from httpretty import httprettified, HTTPretty
 
-try:
-    import urllib.request as urllib2
-except ImportError:
-    import urllib2
+import urllib.request as urllib2
 
 
 @httprettified
@@ -18,7 +14,7 @@ def test_decor():
     got1 = fd.read()
     fd.close()
 
-    expect(got1).to.equal(b'glub glub')
+    assert got1 == b'glub glub'
 
 
 @httprettified

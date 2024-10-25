@@ -43,10 +43,8 @@ def test_https_forwarding():
     response1 = http().get('http://google.com/')
     response2 = http().get('https://google.com/')
 
-    with pytest.raises(UnmockedError) as exc_info:
+    with pytest.raises(UnmockedError, match=r'.*https://github.com/gabrielfalcao/HTTPretty.*') as exc_info:
         http().get("https://github.com/gabrielfalcao/HTTPretty")
-
-    assert exc_info.value == 'https://github.com/gabrielfalcao/HTTPretty'
 
     assert response1.text == response2.text
     try:

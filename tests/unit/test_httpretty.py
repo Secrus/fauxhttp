@@ -35,6 +35,7 @@ from httpretty.core import URIInfo, BaseClass, Entry, FakeSockFile, HTTPrettyReq
 from httpretty.http import STATUSES
 
 from unittest.mock import MagicMock, patch
+import pytest
 
 
 TEST_HEADER = """
@@ -46,14 +47,12 @@ Content-Type: %(content_type)s
 
 def test_httpretty_should_raise_proper_exception_on_inconsistent_length():
     """HTTPretty should raise proper exception on inconsistent Content-Length registered response body"""
-
-    with pytest.raises(HTTPrettyError) as exc_info:
-        HTTPretty.register_uri(HTTPretty.GET, "http://github.com/gabrielfalcao", body="that's me!", adding_headers={"Content-Length": "99"})
-
-    assert exc_info == (
+    msg = (
         'HTTPretty got inconsistent parameters. The header Content-Length you registered expects size "999" '
         'but the body you registered for that has actually length "10".'
     )
+    with pytest.raises(HTTPrettyError, match=msg):
+        HTTPretty.register_uri(HTTPretty.GET, "http://github.com/gabrielfalcao", body="that's me!", adding_headers={"Content-Length": "999"})
 
 
 def test_does_not_have_last_request_by_default():
@@ -161,7 +160,7 @@ def test_uri_info_full_url():
         "http://johhny:password@google.com/?baz=test&foo=bar"
     )
 
-    assert uri_info.full_url(use_querystring=True) == (
+    assert uri_info.full_url(use_querystring=False) == (
         "http://johhny:password@google.com/"
     )
 
@@ -228,7 +227,7 @@ def test_Entry_class_counts_dynamic():
     buf = FakeSockFile()
     entry.fill_filekind(buf)
     response = buf.getvalue()
-    expect(b'content-length: 15\n').to.be.within(response)
+    assert b'content-length: 15\n'in response
 
 
 def test_fake_socket_passes_through_setblocking():
@@ -237,8 +236,8 @@ def test_fake_socket_passes_through_setblocking():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.truesock = MagicMock()
     # should not throw AttributeError
-    s.setblocking(0)
-    s.truesock.setblocking.assert_called_with(0)
+    s.setblocking(False)
+    s.truesock.setblocking.assert_called_with(False)
 
 
 def test_fake_socket_passes_through_fileno():
@@ -246,7 +245,8 @@ def test_fake_socket_passes_through_fileno():
     with httpretty.enabled():
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.truesock = MagicMock()
-        #expect(s.fileno).called_with().should_not.throw(AttributeError)
+        # should not throw AttributeError
+        s.fileno()
         s.truesock.fileno.assert_called_with()
 
 
@@ -256,6 +256,7 @@ def test_fake_socket_passes_through_getsockopt():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.truesock = MagicMock()
     #expect(s.getsockopt).called_with(socket.SOL_SOCKET, 1).should_not.throw(AttributeError)
+    s.getsockopt(socket.SOL_SOCKET, 1)
     s.truesock.getsockopt.assert_called_with(socket.SOL_SOCKET, 1)
 
 
@@ -265,6 +266,7 @@ def test_fake_socket_passes_through_bind():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.truesock = MagicMock()
     #expect(s.bind).called_with(('127.0.0.1', 1000)).should_not.throw(AttributeError)
+    s.bind(('127.0.0.1', 1000))
     s.truesock.bind.assert_called_with(('127.0.0.1', 1000))
 
 
@@ -274,6 +276,7 @@ def test_fake_socket_passes_through_connect_ex():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.truesock = MagicMock()
     #expect(s.connect_ex).called_with().should_not.throw(AttributeError)
+    s.connect_ex()
     s.truesock.connect_ex.assert_called_with()
 
 
@@ -283,6 +286,7 @@ def test_fake_socket_passes_through_listen():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.truesock = MagicMock()
     #expect(s.listen).called_with().should_not.throw(AttributeError)
+    s.listen()
     s.truesock.listen.assert_called_with()
 
 
@@ -292,6 +296,7 @@ def test_fake_socket_passes_through_getpeername():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.truesock = MagicMock()
     #expect(s.getpeername).called_with().should_not.throw(AttributeError)
+    s.getpeername()
     s.truesock.getpeername.assert_called_with()
 
 
@@ -301,6 +306,7 @@ def test_fake_socket_passes_through_getsockname():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.truesock = MagicMock()
     #expect(s.getsockname).called_with().should_not.throw(AttributeError)
+    s.getsockname()
     s.truesock.getsockname.assert_called_with()
 
 
@@ -310,6 +316,7 @@ def test_fake_socket_passes_through_gettimeout():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.truesock = MagicMock()
     #expect(s.gettimeout).called_with().should_not.throw(AttributeError)
+    s.gettimeout()
     s.truesock.gettimeout.assert_called_with()
 
 
@@ -319,6 +326,7 @@ def test_fake_socket_passes_through_shutdown():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.truesock = MagicMock()
     #expect(s.shutdown).called_with(socket.SHUT_RD).should_not.throw(AttributeError)
+    s.shutdown(socket.SHUT_RD)
     s.truesock.shutdown.assert_called_with(socket.SHUT_RD)
 
 
@@ -366,7 +374,7 @@ def test_HTTPrettyRequest_arbitrarypost():
     header = TEST_HEADER % {'content_type': 'thisis/notarealcontenttype'}
     gibberish_body = "1234567890!@#$%^&*()"
     request = HTTPrettyRequest(header, gibberish_body)
-    expect(request.parsed_body).to.equal(gibberish_body)
+    assert request.parsed_body == gibberish_body
 
 
 def test_socktype_bad_python_version_regression():

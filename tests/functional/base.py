@@ -32,6 +32,7 @@ import json
 import socket
 import threading
 
+import pytest
 import tornado.ioloop
 import tornado.web
 from functools import wraps
@@ -96,12 +97,12 @@ class JSONEchoServer(threading.Thread):
         loop.start()
 
 
-def use_tornado_server(callback):
-    lock = threading.Lock()
-    lock.acquire()
+@pytest.fixture
+def use_tornado_server():
+    def server(callback):
+        lock = threading.Lock()
+        lock.acquire()
 
-    @wraps(callback)
-    def func(*args, **kw):
         port = os.getenv('TEST_PORT', get_free_tcp_port())
         POTENTIAL_HTTP_PORTS.add(port)
         kw['port'] = port
@@ -109,10 +110,10 @@ def use_tornado_server(callback):
         server.start()
         try:
             lock.acquire()
-            callback(*args, **kw)
+            yield callback(*args, **kw)
         finally:
             lock.release()
             server.stop()
             if port in POTENTIAL_HTTP_PORTS:
                 POTENTIAL_HTTP_PORTS.remove(port)
-    return func
+    return server

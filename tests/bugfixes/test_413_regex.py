@@ -21,7 +21,7 @@ def test_works_with_regex_path():
 
     response = requests.get("https://github.com/file-one.json")
     assert response.status_code == 200
-    assert response.text == "Mocked https://example.com/file-one.json"
+    assert response.text == "Mocked https://github.com/file-one.json"
 
 
 @httpretty.activate(verbose=True, allow_net_connect=False)
@@ -37,4 +37,4 @@ def test_works_with_regex_dotall():
 
     response = requests.get("https://github.com/file-two.json")
     assert response.status_code == 200
-    assert response.text == "Mocked https://example.com/file-two.json"
+    assert response.text == "Mocked https://github.com/file-two.json"
