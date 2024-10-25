@@ -41,9 +41,15 @@ from datetime import datetime
 from datetime import timedelta
 from errno import EAGAIN
 from functools import partial
-
 from http.server import BaseHTTPRequestHandler
-from urllib.parse import urlsplit, urlunsplit, quote, parse_qs, quote_plus, unquote, urlencode
+from urllib.parse import parse_qs
+from urllib.parse import quote
+from urllib.parse import quote_plus
+from urllib.parse import unquote
+from urllib.parse import urlencode
+from urllib.parse import urlsplit
+from urllib.parse import urlunsplit
+
 from httpretty.errors import HTTPrettyError
 from httpretty.errors import UnmockedError
 from httpretty.http import STATUSES
@@ -1000,6 +1006,7 @@ class Entry:
                 igot = int(got)
             except (ValueError, TypeError):
                 import warnings
+
                 warnings.warn(
                     "HTTPretty got to register the Content-Length header "
                     f'with "{got!r}" which is not a number',

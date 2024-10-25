@@ -1,5 +1,4 @@
 # #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # <HTTPretty - HTTP client mock for Python>
 # Copyright (C) <2011-2021> Gabriel Falcão <gabriel@nacaolivre.org>
 #
@@ -23,20 +22,22 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-# flake8: noqa
+from __future__ import annotations
 
+from httpretty.core import EmptyRequestHeaders
+from httpretty.core import Entry
+from httpretty.core import HTTPrettyRequest
+from httpretty.core import HTTPrettyRequestEmpty
+from httpretty.core import URIInfo
+from httpretty.core import URIMatcher
+from httpretty.core import get_default_thread_timeout
+from httpretty.core import httprettified
+from httpretty.core import httprettized
+from httpretty.core import httpretty
+from httpretty.core import set_default_thread_timeout
+from httpretty.errors import HTTPrettyError
+from httpretty.errors import UnmockedError
 
-from httpretty import core
-
-from httpretty.core import httpretty, httprettified, EmptyRequestHeaders, set_default_thread_timeout, get_default_thread_timeout
-from httpretty.errors import HTTPrettyError, UnmockedError
-
-# aliases
-Entry = core.Entry
-HTTPrettyRequestEmpty = core.HTTPrettyRequestEmpty
-URIInfo = core.URIInfo
-URIMatcher = core.URIMatcher
-httprettized = core.httprettized
 
 HTTPretty = httpretty
 activate = httprettified
@@ -85,3 +86,40 @@ def has_request():
     :returns: bool - whether any request has been made
     """
     return not isinstance(httpretty.last_request.headers, EmptyRequestHeaders)
+
+
+__all__ = [
+    "GET",
+    "PUT",
+    "DELETE",
+    "HEAD",
+    "PATCH",
+    "POST",
+    "OPTIONS",
+    "CONNECT",
+    "last_request",
+    "latest_requests",
+    "has_request",
+    "HTTPretty",
+    "HTTPrettyRequestEmpty",
+    "HTTPrettyRequest",
+    "enable",
+    "activate",
+    "disable",
+    "HTTPretty",
+    "activate",
+    "enabled",
+    "enable",
+    "register_uri",
+    "disable",
+    "is_enabled",
+    "reset",
+    "Response",
+    "UnmockedError",
+    "HTTPrettyError",
+    "set_default_thread_timeout",
+    "URIMatcher",
+    "URIInfo",
+    "Entry",
+    "get_default_thread_timeout",
+]
