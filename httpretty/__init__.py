@@ -26,24 +26,17 @@
 # flake8: noqa
 
 
-from . import core
+from httpretty import core
 
-from .core import httpretty, httprettified, EmptyRequestHeaders
-from .core import set_default_thread_timeout, get_default_thread_timeout
-from .errors import HTTPrettyError, UnmockedError
-from .version import version
-
-__version__ = version
+from httpretty.core import httpretty, httprettified, EmptyRequestHeaders, set_default_thread_timeout, get_default_thread_timeout
+from httpretty.errors import HTTPrettyError, UnmockedError
 
 # aliases
-EmptyRequestHeaders = core.EmptyRequestHeaders
 Entry = core.Entry
 HTTPrettyRequestEmpty = core.HTTPrettyRequestEmpty
 URIInfo = core.URIInfo
 URIMatcher = core.URIMatcher
-httprettified = core.httprettified
 httprettized = core.httprettized
-httpretty = core.httpretty
 
 HTTPretty = httpretty
 activate = httprettified

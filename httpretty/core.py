@@ -36,23 +36,14 @@ import socket
 import tempfile
 import threading
 import time
-import warnings
 
 from datetime import datetime
 from datetime import timedelta
 from errno import EAGAIN
 from functools import partial
 
-from httpretty.compat import BaseClass
-from httpretty.compat import BaseHTTPRequestHandler
-from httpretty.compat import encode_obj
-from httpretty.compat import parse_qs
-from httpretty.compat import quote
-from httpretty.compat import quote_plus
-from httpretty.compat import unquote_utf8
-from httpretty.compat import urlencode
-from httpretty.compat import urlsplit
-from httpretty.compat import urlunsplit
+from http.server import BaseHTTPRequestHandler
+from urllib.parse import urlsplit, urlunsplit, quote, parse_qs, quote_plus, unquote, urlencode
 from httpretty.errors import HTTPrettyError
 from httpretty.errors import UnmockedError
 from httpretty.http import STATUSES
@@ -164,15 +155,6 @@ except ImportError:
 # used to handle error caused by ndg-httpsclient
 pyopenssl_overrides_inject = []
 pyopenssl_overrides_extract = []
-try:
-    from requests.packages.urllib3.contrib.pyopenssl import extract_from_urllib3
-    from requests.packages.urllib3.contrib.pyopenssl import inject_into_urllib3
-
-    pyopenssl_overrides_extract.append(extract_from_urllib3)
-    pyopenssl_overrides_inject.append(inject_into_urllib3)
-except Exception:
-    pass
-
 
 try:
     from urllib3.contrib.pyopenssl import extract_from_urllib3
@@ -184,20 +166,6 @@ except Exception:
     pass
 
 
-try:
-    import requests.packages.urllib3.connection as requests_urllib3_connection
-
-    old_requests_ssl_wrap_socket = requests_urllib3_connection.ssl_wrap_socket
-except ImportError:
-    requests_urllib3_connection = None
-    old_requests_ssl_wrap_socket = None
-#
-# try:
-#     import eventlet
-#     import eventlet.green
-# except ImportError:
-#     eventlet = None
-
 DEFAULT_HTTP_PORTS = frozenset([80])
 POTENTIAL_HTTP_PORTS = set(DEFAULT_HTTP_PORTS)
 DEFAULT_HTTPS_PORTS = frozenset([443])
@@ -208,8 +176,8 @@ def FALLBACK_FUNCTION(x):
     return x
 
 
-class HTTPrettyRequest(BaseHTTPRequestHandler, BaseClass):
-    r"""Represents a HTTP request. It takes a valid multi-line,
+class HTTPrettyRequest(BaseHTTPRequestHandler):
+    """Represents a HTTP request. It takes a valid multi-line,
     ``\r\n`` separated string with HTTP headers and parse them out using
     the internal `parse_request` method.
 
@@ -358,7 +326,7 @@ class HTTPrettyRequest(BaseHTTPRequestHandler, BaseClass):
         :returns: a dict of lists
 
         """
-        expanded = unquote_utf8(qs)
+        expanded = unquote(qs)
         parsed = parse_qs(expanded)
         result = {}
         for k in parsed:
@@ -953,7 +921,7 @@ def fake_getaddrinfo(host, port, family=None, socktype=None, proto=None, flags=N
     ]
 
 
-class Entry(BaseClass):
+class Entry:
     """Created by :py:meth:`~httpretty.core.httpretty.register_uri` and
     stored in memory as internal representation of a HTTP
     request/response definition.
@@ -1031,6 +999,7 @@ class Entry(BaseClass):
             try:
                 igot = int(got)
             except (ValueError, TypeError):
+                import warnings
                 warnings.warn(
                     "HTTPretty got to register the Content-Length header "
                     f'with "{got!r}" which is not a number',
@@ -1041,13 +1010,9 @@ class Entry(BaseClass):
             if igot and igot > self.body_length:
                 raise HTTPrettyError(
                     "HTTPretty got inconsistent parameters. The header "
-                    'Content-Length you registered expects size "%d" but '
+                    f'Content-Length you registered expects size "{igot}" but '
                     "the body you registered for that has actually length "
-                    '"%d".'
-                    % (
-                        igot,
-                        self.body_length,
-                    )
+                    f'"{self.body_length}".'
                 )
 
     def __str__(self):
@@ -1140,22 +1105,15 @@ class Entry(BaseClass):
         fk.seek(0)
 
 
-def url_fix(s, charset=None):
+def url_fix(s):
     """escapes special characters"""
-    if charset:
-        warnings.warn(
-            f"{__name__}.url_fix() charset argument is deprecated",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
     scheme, netloc, path, querystring, fragment = urlsplit(s)
     path = quote(path, b"/%")
     querystring = quote_plus(querystring, b":&=")
     return urlunsplit((scheme, netloc, path, querystring, fragment))
 
 
-class URIInfo(BaseClass):
+class URIInfo:
     """Internal representation of `URIs <https://en.wikipedia.org/wiki/Uniform_Resource_Identifier>`_
 
     .. tip:: all arguments are optional
@@ -1205,10 +1163,7 @@ class URIInfo(BaseClass):
         self.path = path or ""
         if query:
             query_items = sorted(parse_qs(query).items())
-            self.query = urlencode(
-                encode_obj(query_items),
-                doseq=True,
-            )
+            self.query = urlencode(query_items, doseq=True)
         else:
             self.query = ""
         if scheme:
@@ -1853,17 +1808,6 @@ def apply_patch_socket():
     for _extract_from_urllib3 in pyopenssl_overrides_extract:
         _extract_from_urllib3()
 
-    if requests_urllib3_connection is not None:
-        urllib3_wrap = partial(fake_wrap_socket, old_requests_ssl_wrap_socket)
-        requests_urllib3_connection.ssl_wrap_socket = urllib3_wrap
-        requests_urllib3_connection.__dict__["ssl_wrap_socket"] = urllib3_wrap
-
-    # if eventlet:
-    #     eventlet.green.ssl.GreenSSLContext = old_sslcontext_class
-    #     eventlet.green.ssl.__dict__["GreenSSLContext"] = old_sslcontext_class
-    #     eventlet.green.ssl.SSLContext = old_sslcontext_class
-    #     eventlet.green.ssl.__dict__["SSLContext"] = old_sslcontext_class
-
     if socks:
         socks.socksocket = fakesock.socket
         socks.__dict__["socksocket"] = fakesock.socket
@@ -1913,12 +1857,6 @@ def undo_patch_socket():
             ssl.SSLContext.wrap_socket = old_sslcontext_wrap_socket
         ssl.__dict__["wrap_socket"] = old_ssl_wrap_socket
         ssl.__dict__["SSLSocket"] = old_sslsocket
-
-    if requests_urllib3_connection is not None:
-        requests_urllib3_connection.ssl_wrap_socket = old_requests_ssl_wrap_socket
-        requests_urllib3_connection.__dict__["ssl_wrap_socket"] = (
-            old_requests_ssl_wrap_socket
-        )
 
     # Put the pyopenssl version back in place
     for _inject_from_urllib3 in pyopenssl_overrides_inject:

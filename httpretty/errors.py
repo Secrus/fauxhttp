@@ -36,18 +36,23 @@ class UnmockedError(HTTPrettyError):
     def __init__(
         self, message="Failed to handle network request", request=None, address=None
     ):
-        hint = "Tip: You could try setting (allow_net_connect=True) to allow unregistered requests through a real TCP connection in addition to (verbose=True) to debug the issue."
+        hint = (
+            "Tip: You could try setting (allow_net_connect=True)"
+            " to allow unregistered requests through a real TCP"
+            " connection in addition to (verbose=True) to debug the issue."
+        )
         if request:
             headers = json.dumps(dict(request.headers), indent=2)
-            message = "{message}.\n\nIntercepted unknown {request.method} request {request.url}\n\nWith headers {headers}".format(
-                **locals()
+            message = (
+                f"{message}.\n\nIntercepted unknown {request.method}"
+                f"request {request.url}\n\nWith headers {headers}"
             )
 
         if isinstance(address, (tuple, list)):
             address = ":".join(map(str, address))
 
         if address:
-            hint = "address: {address} | {hint}".format(**locals())
+            hint = f"address: {address} | {hint}"
 
         self.request = request
-        super().__init__("{message}\n\n{hint}".format(**locals()))
+        super().__init__(f"{message}\n\n{hint}")

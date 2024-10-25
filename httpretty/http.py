@@ -1,4 +1,3 @@
-# #!/usr/bin/env python
 # <HTTPretty - HTTP client mock for Python>
 # Copyright (C) <2011-2021> Gabriel Falcão <gabriel@nacaolivre.org>
 #
@@ -26,7 +25,6 @@ from __future__ import annotations
 
 import re
 
-from httpretty.compat import BaseClass
 from httpretty.utils import decode_utf8
 
 
@@ -108,7 +106,7 @@ STATUSES = {
 }
 
 
-class HttpBaseClass(BaseClass):
+class HttpBaseClass:
     GET = "GET"
     PUT = "PUT"
     POST = "POST"
