@@ -92,7 +92,7 @@ class __internals__:
 
     @classmethod
     def create_temp_file(cls):
-        fd = tempfile.TemporaryFile()
+        fd = tempfile.TemporaryFile()  # noqa: SIM115
         cls.temp_files.append(fd)
         return fd
 
