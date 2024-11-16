@@ -29,36 +29,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-#
-#      - name: Install Poetry
-#        run: pipx install poetry
-#
-#      - name: Set up Python ${{ matrix.python-version }}
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#          cache: poetry
-#
-#      - name: Install dependencies
-#        run: poetry install
-#
-#      - name: Run typechecking
-#        run: poetry run mypy
-#
-#      - name: Run tests
-#        run: poetry run pytest
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
+        id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
+          allow-prereleases: true
+          update-environment: false
 
-      - name: Install project
-        run: pip install .
+      - name: Install Poetry
+        run: pipx install poetry
 
-      - name: Install test dependencies
-        run: pip install -r development.txt
+      - name: Poetry Install
+        uses: python-poetry/poetry/.github/actions/poetry-install@main
+        with:
+          args: "--without docs --sync"
 
       - name: run tests
-        run: pytest
+        run: poetry run pytest

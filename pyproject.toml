@@ -1,7 +1,53 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.5.0"]
+build-backend = "poetry.core.masonry.api"
 
+[tool.poetry]
+name = "fauxhttp"
+version = "0.1.0"
+description = "HTTP client mock for Python."
+authors = ["Gabriel Falcao <gabriel@nacaolivre.org>"]
+maintainers = [
+    "Secrus <b.sokorski@gmail.com>",
+]
+license = "MIT"
+readme = "README.rst"
+packages = [
+    { include = "httpretty", from = "src" }
+]
+include = [{ path = "tests", format = "sdist" }]
+homepage = "https://github.com/Secrus/fauxhttp"
+repository = "https://github.com/Secrus/fauxhttp"
+documentation = "https://httpretty.readthedocs.io/en/latest/"
+keywords = ["packaging", "dependency", "poetry"]
+classifiers = [
+    'Intended Audience :: Developers',
+    'Topic :: Internet :: WWW/HTTP',
+    'Topic :: Software Development :: Testing'
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.group.dev.dependencies]
+coverage = ">=5.0.3"
+cryptography = ">=2.8"
+eventlet = "0.25.1"
+freezegun = ">=0.3.15"
+httplib2 = ">=0.17.0"
+httpx = ">=0.18.1"
+pyopenssl = ">=19.1.0"
+redis = "3.4.1"
+tornado = ">=6.0.4"
+urllib3 = ">=1.25.8"
+boto3 = ">=1.17.72"
+ndg-httpsclient = ">=0.5.1"
+pytest = "^8.3.3"
+requests = "^2.32.3"
+
+[tool.poetry.group.docs.dependencies]
+sphinx-rtd-theme = { version = ">=0.5.2", python = "^3.10" }
+sphinx = { version = ">=4.0.2", python = "^3.10" }
 
 [tool.ruff]
 extend-exclude = [
@@ -15,11 +61,11 @@ target-version = "py39"
 
 [tool.ruff.lint]
 extend-select = [
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
+    "B", # flake8-bugbear
+    "C4", # flake8-comprehensions
     "ERA", # flake8-eradicate/eradicate
-    "I",   # isort
-    "N",   # pep8-naming
+    "I", # isort
+    "N", # pep8-naming
     "PIE", # flake8-pie
     "PGH", # pygrep
     "RUF", # ruff checks
@@ -27,7 +73,7 @@ extend-select = [
     "T20", # flake8-print
     "TCH", # flake8-type-checking
     "TID", # flake8-tidy-imports
-    "UP",  # pyupgrade
+    "UP", # pyupgrade
 ]
 ignore = [
     "N",

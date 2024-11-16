@@ -291,7 +291,8 @@ def test_streaming_responses():
     twitter_response_lines = [
         b'{"text":"If \\"for the boobs\\" requests to follow me one more time I\'m calling the police. http://t.co/a0mDEAD8"}\r\n',
         b'\r\n',
-        b'{"text":"RT @onedirection: Thanks for all your # FollowMe1D requests Directioners! We\u2019ll be following 10 people throughout the day starting NOW. G ..."}\r\n'
+        b'{"text":"RT @onedirection: Thanks for all your # FollowMe1D requests Directioners! We\\u2019ll be following 10 '
+        b'people throughout the day starting NOW. G ..."}\r\n'
     ]
 
     TWITTER_STREAMING_URL = "https://stream.twitter.com/1/statuses/filter.json"
