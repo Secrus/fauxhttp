@@ -13,7 +13,7 @@ maintainers = [
 license = "MIT"
 readme = "README.rst"
 packages = [
-    { include = "httpretty" }
+    { include = "httpretty", from = "src" }
 ]
 include = [{ path = "tests", format = "sdist" }]
 homepage = "https://github.com/Secrus/fauxhttp"
