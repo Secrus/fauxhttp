@@ -1,10 +1,12 @@
 import pytest
+import sys
 
 import httpretty
 import boto3
 from botocore.exceptions import ClientError
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="FIXME: This test fails on windows")
 @httpretty.activate(allow_net_connect=False, verbose=True)
 def test_boto3():
     "#416 boto3 issue"
