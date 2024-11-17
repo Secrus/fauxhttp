@@ -622,12 +622,12 @@ def test_httpretty_allows_to_chose_if_querystring_should_be_matched():
     )
     HTTPretty.register_uri(
         HTTPretty.GET,
-        re.compile(r"http://localhost:9090/what.*[?]?.*"),
+        re.compile(r"http://localhost:9090/what/?$"),
         body="Different",
         match_querystring=False
     )
     response = requests.get('http://localhost:9090/what/')
-    assert response.text=='Nudge, nudge, wink, wink. Know what I mean?'
+    assert response.text=='Different'
 
     response = requests.get('http://localhost:9090/what/', params={'flying': 'coconuts'})
     assert response.text =='Nudge, nudge, wink, wink. Know what I mean?'

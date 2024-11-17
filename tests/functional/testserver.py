@@ -142,8 +142,15 @@ class TCPServer(object):
 class TCPClient(object):
     def __init__(self, port):
         self.port = int(port)
-        self.sock = true_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(('localhost', self.port))
+        self._sock = true_socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    @property
+    def sock(self):
+        try:
+            self._sock.getpeername()
+        except socket.error:
+            self._sock.connect(('localhost', self.port))
+        return self._sock
 
     def send(self, data):
         if isinstance(data, str):
