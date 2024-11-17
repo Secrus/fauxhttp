@@ -266,7 +266,6 @@ def test_httpretty_ignores_querystrings_from_registered_uri():
 
 
 @httprettified
-#@within(five=miliseconds)
 def test_streaming_responses():
     """
     Mock a streaming HTTP response, like those returned by the Twitter streaming
@@ -276,16 +275,27 @@ def test_streaming_responses():
     @contextmanager
     def in_time(time, message):
         """
-        A context manager that uses signals to force a time limit in tests
-        (unlike the `@within` decorator, which only complains afterward), or
-        raise an AssertionError.
+        A context manager that uses threading to force a time limit in tests,
+        or raise an AssertionError.
         """
-        def handler(signum, frame):
+        import threading
+
+        class TimeoutException(Exception):
+            pass
+
+        def timeout_handler():
+            raise TimeoutException(message)
+
+        timer = threading.Timer(time, timeout_handler)
+        timer.start()
+
+        try:
+            yield
+        except TimeoutException:
             raise AssertionError(message)
-        signal.signal(signal.SIGALRM, handler)
-        signal.setitimer(signal.ITIMER_REAL, time)
-        yield
-        signal.setitimer(signal.ITIMER_REAL, 0)
+        finally:
+            timer.cancel()
+
 
     # XXX this obviously isn't a fully functional twitter streaming client!
     twitter_response_lines = [

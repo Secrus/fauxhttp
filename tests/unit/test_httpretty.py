@@ -27,6 +27,8 @@
 from __future__ import unicode_literals
 import re
 import json
+import sys
+
 import httpretty
 from httpretty import HTTPretty
 from httpretty import HTTPrettyError
@@ -330,6 +332,7 @@ def test_fake_socket_passes_through_shutdown():
     s.truesock.shutdown.assert_called_with(socket.SHUT_RD)
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="Only Unix shells")
 def test_unix_socket():
     import socket
     HTTPretty.enable()
