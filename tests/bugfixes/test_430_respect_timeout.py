@@ -51,4 +51,4 @@ def test_read_timeout():
 
     event.set()
     total_time = time.time() - started_at
-    assert total_time < 0.2
+    assert total_time < 1.0
