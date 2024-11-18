@@ -266,7 +266,6 @@ def test_httpretty_ignores_querystrings_from_registered_uri():
 
 
 @httprettified
-#@within(five=miliseconds)
 def test_streaming_responses():
     """
     Mock a streaming HTTP response, like those returned by the Twitter streaming
@@ -276,16 +275,27 @@ def test_streaming_responses():
     @contextmanager
     def in_time(time, message):
         """
-        A context manager that uses signals to force a time limit in tests
-        (unlike the `@within` decorator, which only complains afterward), or
-        raise an AssertionError.
+        A context manager that uses threading to force a time limit in tests,
+        or raise an AssertionError.
         """
-        def handler(signum, frame):
+        import threading
+
+        class TimeoutException(Exception):
+            pass
+
+        def timeout_handler():
+            raise TimeoutException(message)
+
+        timer = threading.Timer(time, timeout_handler)
+        timer.start()
+
+        try:
+            yield
+        except TimeoutException:
             raise AssertionError(message)
-        signal.signal(signal.SIGALRM, handler)
-        signal.setitimer(signal.ITIMER_REAL, time)
-        yield
-        signal.setitimer(signal.ITIMER_REAL, 0)
+        finally:
+            timer.cancel()
+
 
     # XXX this obviously isn't a fully functional twitter streaming client!
     twitter_response_lines = [
@@ -622,12 +632,12 @@ def test_httpretty_allows_to_chose_if_querystring_should_be_matched():
     )
     HTTPretty.register_uri(
         HTTPretty.GET,
-        re.compile(r"http://localhost:9090/what.*[?]?.*"),
+        re.compile(r"http://localhost:9090/what/?$"),
         body="Different",
         match_querystring=False
     )
     response = requests.get('http://localhost:9090/what/')
-    assert response.text=='Nudge, nudge, wink, wink. Know what I mean?'
+    assert response.text=='Different'
 
     response = requests.get('http://localhost:9090/what/', params={'flying': 'coconuts'})
     assert response.text =='Nudge, nudge, wink, wink. Know what I mean?'

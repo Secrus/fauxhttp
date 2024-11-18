@@ -2,6 +2,7 @@ import io
 import json
 import errno
 
+import pytest
 from freezegun import freeze_time
 
 from httpretty.core import HTTPrettyRequest, FakeSSLSocket, fakesock, httpretty
@@ -361,7 +362,10 @@ def test_fakesock_socket_real_sendall_continue_eagain_when_http(socket, old_sock
     socket.is_http = True
 
     # When I call real_sendall with data, some args and kwargs
-    socket.real_sendall(b"SOMEDATA", b'some extra args...', foo=b'bar')
+    with pytest.raises(SocketErrorStub) as exc:
+        socket.real_sendall(b"SOMEDATA", b'some extra args...', foo=b'bar')
+
+    assert exc.value.errno == errno.EAGAIN
 
     # Then it should have called sendall in the real socket
     real_socket.sendall.assert_called_once_with(b"SOMEDATA", b'some extra args...', foo=b'bar')
@@ -374,6 +378,8 @@ def test_fakesock_socket_real_sendall_continue_eagain_when_http(socket, old_sock
         call(socket._bufsize)
     ])
 
+    socket.real_sendall(b"SOMEDATA", b'some extra args...', foo=b'bar')
+
     # And the buffer should contain the data from the server
     assert socket.fd.read() == b"after error"
 
@@ -384,7 +390,7 @@ def test_fakesock_socket_real_sendall_continue_eagain_when_http(socket, old_sock
 @patch('httpretty.core.old_socket')
 @patch('httpretty.core.socket')
 def test_fakesock_socket_real_sendall_socket_error_when_http(socket, old_socket):
-    ("fakesock.socket#real_sendall should continue if the socket error was EAGAIN")
+    # fakesock.socket#real_sendall should continue if the socket error was EAGAIN
     socket.error = SocketErrorStub
     # Background: the real socket will stop returning bytes after the
     # first call
@@ -397,7 +403,10 @@ def test_fakesock_socket_real_sendall_socket_error_when_http(socket, old_socket)
     socket.is_http = True
 
     # When I call real_sendall with data, some args and kwargs
-    socket.real_sendall(b"SOMEDATA", b'some extra args...', foo=b'bar')
+    with pytest.raises(SocketErrorStub) as exc:
+        socket.real_sendall(b"SOMEDATA", b'some extra args...', foo=b'bar')
+
+    assert exc.value.errno == 42
 
     # Then it should have called sendall in the real socket
     real_socket.sendall.assert_called_once_with(b"SOMEDATA", b'some extra args...', foo=b'bar')

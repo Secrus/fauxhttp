@@ -89,7 +89,9 @@ def tcp_server():
         client: TCPClient
 
     tcp_port = get_free_tcp_port()
-    context = TCPServerContext(TCPServer(tcp_port), tcp_port, TCPClient(tcp_port))
+    server = TCPServer(tcp_port)
+    client = TCPClient(tcp_port)
+    context = TCPServerContext(server, tcp_port, client)
     context.server.start()
     httpretty.enable()
 

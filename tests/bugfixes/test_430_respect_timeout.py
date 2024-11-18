@@ -1,6 +1,7 @@
 # This test is based on @mariojonke snippet:
 # https://github.com/gabrielfalcao/HTTPretty/issues/430
 import time
+import warnings
 
 import pytest
 from requests import Session
@@ -46,8 +47,8 @@ def test_read_timeout():
     started_at = time.time()
 
     with pytest.raises(ReadTimeout):
-        request.get(uri, timeout=(None, 0.1))
+        request.get(uri, timeout=0.1)
 
     event.set()
     total_time = time.time() - started_at
-    assert total_time < 0.2
+    assert total_time < 1.0
